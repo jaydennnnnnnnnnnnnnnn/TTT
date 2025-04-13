@@ -16,8 +16,16 @@ import { ImCross } from "react-icons/im";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 
 const ActivityItem = ({ activity }) => {
-  const { distance, moving_time, elapsed_time, average_speed, start_date_local, name } = activity;
+  const { distance, moving_time, elapsed_time, average_speed, start_date_local, name, manual} = activity;
 
+  // Sets week timeframe from Nov 30 2024 @ 8pm (sun) onwards (1731240000) 
+  let epochTimestampSeconds = Math.floor(Date.now() / 1000); 
+  const before = 1731240000;
+  while (before + 604800 < epochTimestampSeconds){
+    before += 604800;
+  }
+  const after = before + 604800;
+  
   // Convert speed (m/s) to min/km
   const pace = average_speed > 0 ? 1000 / average_speed / 60 : 0;
   const formattedPace = `${Math.floor(pace)}:${((pace % 1) * 60).toFixed(0).padStart(2, "0")} min/km`;
@@ -28,7 +36,7 @@ const ActivityItem = ({ activity }) => {
   // Format start date
   const startDate = new Date(start_date_local).toLocaleString();
 
-  const isEligible = pace < 7 && distance > 3000;
+  const isEligible = before <= Date.parse(activity.start_date_local) && after >= Date.parse(activity.start_date_local) && pace < 7 && distance > 3000 && manual == false;
   
   
 
